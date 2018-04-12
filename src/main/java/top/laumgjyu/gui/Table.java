@@ -67,6 +67,17 @@ public class Table extends JPanel {
             completeStack[i].setStackIndex(-i-1);
         }
 
+                    /*
+        清空之前的stack，以防止new game 按钮被点击时出错
+         */
+        for (int i = 0; i < 7; i++) {
+            tableStack[i].clear();
+        }
+        for (int i = 0; i < 4; i++) {
+            completeStack[i].clear();
+        }
+        deskStack.clear();
+
         /*
         由于在项目中不需要这deskStack的坐标，为了之后辨别其与其他的Stack，这里显示的将其初始化为0
          */
@@ -122,7 +133,7 @@ public class Table extends JPanel {
         for (int i = 0; i < allPokers.size(); i++) {
             tmp = allPokers.get(i);
             tmp.setStack(-5);
-            deskStack.push(tmp);
+            deskStack.add(tmp);
         }
         allPokers.clear();
     }
