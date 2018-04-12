@@ -19,4 +19,6 @@ public class ImagePaths {
     public static final String NEW_GAME = "images/New_Game.png";
 
     public static final String UNDO = "images/Undo.png";
+
+    public static final String HIGH_LIGHT = "images/Card_Highlight.png";
 }

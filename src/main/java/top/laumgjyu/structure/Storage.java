@@ -4,6 +4,7 @@ import top.laumgjyu.consts.PokerType;
 import top.laumgjyu.gui.Poker;
 import top.laumgjyu.util.ImageUtil;
 
+import static top.laumgjyu.consts.CoordinateConst.UP_DOWN_STACKS_SPACE;
 import static top.laumgjyu.gui.Poker.POKER_HEIGHT;
 import static top.laumgjyu.gui.Poker.POKER_WIDTH;
 
@@ -15,6 +16,7 @@ public class Storage {
     public static PokerStack[] tableStack = new PokerStack[7];  //桌面的七个牌堆
     public static PokerStack[] completeStack = new PokerStack[4]; //右上角的四个牌堆
     public static PokerStack<Poker> deskStack = new PokerStack<>();  //取牌的牌堆
+    public static PokerStack<Poker> deskRestStack = new PokerStack<>(); //取牌的剩余牌堆
 
     public static boolean put(int newStackIndex, Poker poker) {
         //put poker into this stack
@@ -29,16 +31,23 @@ public class Storage {
 
         int newStackSize = newStack.size();
 
-        Poker newStackFront = (Poker) newStack.get(newStackSize - 1);
+        /*
+        如果新牌堆的容量不为0
+         */
+        if (newStackSize != 0) {
 
-        PokerType newStackFrontType = newStackFront.getType();
-        int newStackFrontNumber = newStackFront.getNumber().getValue();
+            Poker newStackFront = (Poker) newStack.get(newStackSize - 1);
 
-        //return if current poker's color equals the new stack front poker's color
-        if (poker.getType().getColor() == newStackFrontType.getColor()) return false;
+            PokerType newStackFrontType = newStackFront.getType();
+            int newStackFrontNumber = newStackFront.getNumber().getValue();
 
-        //return if current poker's number not equals the new stack front poker's number minus 1
-        if (poker.getNumber().getValue() != newStackFrontNumber - 1) return false;
+            //return if current poker's color equals the new stack front poker's color
+            if (poker.getType().getColor() == newStackFrontType.getColor()) return false;
+
+            //return if current poker's number not equals the new stack front poker's number minus 1
+            if (poker.getNumber().getValue() != newStackFrontNumber - 1) return false;
+
+        }
 
         putOnNewStack(newStack, oldStack, poker);
 
@@ -54,11 +63,16 @@ public class Storage {
         for (int i = pokerToAddIndex; i < oldStack.size(); i++) {
             pokerToAdd = (Poker) oldStack.get(i);
 
+            if (newStack.size() != 0) {
+                newStack.setY(newStack.getY() + SPACE);
+            } else {
+                newStack.setY(newStack.getY());
+            }
+
             newStack.add(newStack.size(), pokerToAdd);
 
             pokerToAdd.setStack(newStack.getStackIndex());
 
-            newStack.setY(newStack.getY() + SPACE);
             pokerToAdd.setLocation(newStack.getX(), newStack.getY());
         }
 
@@ -77,7 +91,10 @@ public class Storage {
         /*
         如果移除之后牌堆为空，直接返回
          */
-        if (oldStack.size() <= 0) return;
+        if (oldStack.size() <= 0) {
+            oldStack.setY(POKER_HEIGHT + 2 * UP_DOWN_STACKS_SPACE);
+            return;
+        }
 
         /*
         如果oldStack为tableStack，将移除后的堆栈的最后一张纸牌显示出来

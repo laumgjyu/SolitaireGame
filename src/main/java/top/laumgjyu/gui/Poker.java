@@ -3,16 +3,21 @@ package top.laumgjyu.gui;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import top.laumgjyu.consts.ImagePaths;
 import top.laumgjyu.consts.PokerNumber;
 import top.laumgjyu.consts.PokerType;
 import top.laumgjyu.structure.PokerStack;
 import top.laumgjyu.structure.Storage;
+import top.laumgjyu.util.ImageUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.EmptyStackException;
+
+import static top.laumgjyu.consts.CoordinateConst.*;
 
 /**
  * Created by lmy on 2018/4/9.
@@ -137,7 +142,6 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
         } else {
             moveTablePoker(parentContainer, currentPoker, stackIndex, x, y);
         }
-
     }
 
     private void moveDeskPoker(Container parentContainer, Poker currentPoker, int x, int y) {
@@ -181,7 +185,36 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        //do nothing
+        Poker poker = (Poker) e.getSource();
+        Poker deskRestFront = null;
+        try {
+            deskRestFront = Storage.deskRestStack.peek();
+        } catch (EmptyStackException e1) {
+            Poker tmp = null;
+            while (Storage.deskStack.size() != 0) {
+                tmp = Storage.deskStack.pop();
+                Storage.deskRestStack.push(tmp);
+
+                poker.getParent().setComponentZOrder(tmp, 0);
+
+                tmp.setFront(false);
+                tmp.setBounds(HOLDER_X_X, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
+                tmp.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, ImagePaths.BACK));
+            }
+        }
+
+        if (poker == deskRestFront) {
+            Storage.deskRestStack.pop();
+            Storage.deskStack.push(deskRestFront);
+
+            poker.getParent().setComponentZOrder(deskRestFront, 0);
+
+            deskRestFront.setFront(true);
+            String deskFrontType = deskRestFront.getType().getValue();
+            int deskFrontNumber = deskRestFront.getNumber().getValue();
+            deskRestFront.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, deskFrontType, deskFrontNumber));
+            deskRestFront.setBounds(HOLDER_X_X + TABLE_STACKS_SPACE, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package top.laumgjyu.gui;
 
-import top.laumgjyu.consts.CoordinateConst;
 import top.laumgjyu.consts.ImagePaths;
 import top.laumgjyu.consts.PokerNumber;
 import top.laumgjyu.consts.PokerType;
@@ -30,7 +29,9 @@ public class Table extends JPanel {
 
     private PokerStack[] completeStack; //右上角的四个牌堆
 
-    private PokerStack<Poker> deskStack;  //取牌的牌堆
+    private PokerStack<Poker> deskRestStack;  //取牌的剩余牌堆
+
+    private PokerStack<Poker> deskStack;   //取牌的牌堆
 
     private LinkedList<Poker> allPokers;  //所有扑克
 
@@ -51,6 +52,7 @@ public class Table extends JPanel {
         tableStack = Storage.tableStack;
         completeStack = Storage.completeStack;
         deskStack = Storage.deskStack;
+        deskRestStack = Storage.deskRestStack;
         allPokers = new LinkedList<>();
 
         for (int i = 0; i < 7; i++) {
@@ -64,7 +66,7 @@ public class Table extends JPanel {
             completeStack[i] = new PokerStack<Poker>();
             completeStack[i].setX(HOLDER_A_X[i]);
             completeStack[i].setY(UP_DOWN_STACKS_SPACE);
-            completeStack[i].setStackIndex(-i-1);
+            completeStack[i].setStackIndex(-i - 1);
         }
 
                     /*
@@ -76,14 +78,15 @@ public class Table extends JPanel {
         for (int i = 0; i < 4; i++) {
             completeStack[i].clear();
         }
+        deskRestStack.clear();
         deskStack.clear();
 
         /*
         由于在项目中不需要这deskStack的坐标，为了之后辨别其与其他的Stack，这里显示的将其初始化为0
          */
-        deskStack.setX(0);
-        deskStack.setY(0);
-        deskStack.setStackIndex(-5);
+        deskRestStack.setX(0);
+        deskRestStack.setY(0);
+        deskRestStack.setStackIndex(-5);
     }
 
     private void initialPokers() {
@@ -133,7 +136,7 @@ public class Table extends JPanel {
         for (int i = 0; i < allPokers.size(); i++) {
             tmp = allPokers.get(i);
             tmp.setStack(-5);
-            deskStack.add(tmp);
+            deskRestStack.push(tmp);
         }
         allPokers.clear();
     }
@@ -156,28 +159,31 @@ public class Table extends JPanel {
         /*
         在界面上添加左上角牌堆的第一张图片
          */
-        Poker deskFront = null;
-        for (int i = 0; i <deskStack.size(); i++) {
-            deskFront = deskStack.get(i);
-            deskFront.setFront(true);
-            deskFront.setBounds(HOLDER_X_X + TABLE_STACKS_SPACE, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
-            String deskFrontType = deskFront.getType().getValue();
-            int deskFrontNumber = deskFront.getNumber().getValue();
-            deskFront.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, deskFrontType, deskFrontNumber));
-        }
+        setHolderX();
 
-        add(deskFront);
+        Poker deskRest = null;
+        for (int i = 0; i < deskRestStack.size(); i++) {
+            deskRest = deskRestStack.get(i);
+            deskRest.setFront(false);
+            deskRest.setBounds(HOLDER_X_X, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
+//            deskRest.setBounds(HOLDER_X_X + TABLE_STACKS_SPACE, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
+//            String deskFrontType = deskRest.getType().getValue();
+//            int deskFrontNumber = deskRest.getNumber().getValue();
+//            deskRest.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, deskFrontType, deskFrontNumber));
+            deskRest.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, ImagePaths.BACK));
+            add(deskRest, 0);
+        }
 
         /*
         添加左上角牌堆剩余的图片
          */
-        Poker deskRest = new Poker();
-        deskRest.setFront(false);
-        deskRest.setType(PokerType.HOLDER);
-        deskRest.setNumber(PokerNumber.HOLDER);
-        deskRest.setBounds(HOLDER_X_X, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
-        deskRest.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, ImagePaths.BACK));
-        add(deskRest, 1);
+//        Poker deskRest = new Poker();
+//        deskRest.setFront(false);
+//        deskRest.setType(PokerType.HOLDER);
+//        deskRest.setNumber(PokerNumber.HOLDER);
+//        deskRest.setBounds(HOLDER_X_X, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
+//        deskRest.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, ImagePaths.BACK));
+//        add(deskRest, 1);
     }
 
     private void initialHolderA() {
@@ -193,7 +199,7 @@ public class Table extends JPanel {
         holderX.setNumber(PokerNumber.HOLDER);
         holderX.setBounds(HOLDER_X_X, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
         holderX.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, ImagePaths.HOLDER_X));
-        add(holderX);
+        add(holderX, 0);
     }
 
     private void setHolderA(int x) {
