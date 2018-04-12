@@ -57,6 +57,7 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
         addMouseListener(this);
     }
 
+
     public int getStack() {
         return stack;
     }
