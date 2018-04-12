@@ -12,6 +12,10 @@ import javax.swing.*;
 @Getter
 public class Button extends JLabel{
 
+    public static final int BUTTON_WIDTH = 180;  //按钮的宽度
+
+    public static final int BUTTON_HEIGHT = 60;  //按钮的高度
+
     public static final int NEW_GAME = 0;
 
     public static final int UNDO = 1;

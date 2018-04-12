@@ -24,6 +24,8 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
 
     public static final int POKER_WIDTH = 160;  //纸牌的默认宽度
     public static final int POKER_HEIGHT = 225;  //纸牌的默认高度
+    public static final int TABLEAU_HEIGHT = 112;  //下方七个牌堆空之后的占位框的高度
+
     private static final long serialVersionUID = -4413443648767942534L;
     private PokerType type;  //扑克的种类
     private PokerNumber number;  //扑克的数值
@@ -33,7 +35,7 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
     当前扑克属于哪个牌堆
     1-7分别表示下方七个牌堆
     0表示左上角四个牌堆
-    -1 -2 -3 -4分别表示右上角从左到右的四个牌堆
+    -1 -2 -3 -4 -5分别表示上方从右到左的五个牌堆
      */
     private int stack;
     /*
@@ -74,7 +76,7 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
     @Override
     public void mouseReleased(MouseEvent e) {
         /*
-        e.getX()和e.getY()获取事件发生位置与当前扑克labekl左上角的相对坐标
+        e.getX()和e.getY()获取事件发生位置与当前扑克label左上角的相对坐标
         这里先获取扑克的绝对坐标（即左上角坐标），然后计算事件发生位置的绝对坐标
          */
         Poker clickedPoker = (Poker) e.getSource();
@@ -85,14 +87,12 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
         int y = e.getY() + clickedPoker.getY();
 
         if (!putHere(x, y)) {
-            Poker topPoker = (Poker) e.getSource();
-            int tableStackIndex = topPoker.getStack();
-            PokerStack tableStack = Storage.tableStack[tableStackIndex];
+            int stackIndex = clickedPoker.getStack();
 
-            int topPokerIndex = tableStack.indexOf(topPoker);
-
-            for (int i = topPokerIndex; i < tableStack.size(); i++) {
-                ((Poker) tableStack.get(i)).setLocation(currentPokerPoint.x, currentPokerPoint.y + (i - topPokerIndex) * Storage.SPACE);
+            if (stackIndex < 0) {
+                resetToDeskStack(clickedPoker);
+            } else {
+                resetToTableStack(clickedPoker, stackIndex);
             }
         }
     }
@@ -100,10 +100,24 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
     private boolean putHere(int x, int y) {
         for (int i = 0; i < Storage.tableStack.length; i++) {
             if (Storage.tableStack[i].include(x, y)) {
-                return Storage.put(i, x, y, this);
+                return Storage.put(i, this);
             }
         }
         return false;
+    }
+
+    private void resetToTableStack(Poker topPoker, int tableStackIndex) {
+        PokerStack tableStack = Storage.tableStack[tableStackIndex];
+
+        int topPokerIndex = tableStack.indexOf(topPoker);
+
+        for (int i = topPokerIndex; i < tableStack.size(); i++) {
+            ((Poker) tableStack.get(i)).setLocation(currentPokerPoint.x, currentPokerPoint.y + (i - topPokerIndex) * Storage.SPACE);
+        }
+    }
+
+    private void resetToDeskStack(Poker clickedPoker) {
+        clickedPoker.setLocation(currentPokerPoint.x, currentPokerPoint.y);
     }
 
     @Override
@@ -118,6 +132,25 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
         int y = endPoint.y - currentMousePoint.y;
 
         int stackIndex = currentPoker.getStack();
+        if (stackIndex < 0) {
+            moveDeskPoker(parentContainer, currentPoker, x, y);
+        } else {
+            moveTablePoker(parentContainer, currentPoker, stackIndex, x, y);
+        }
+
+    }
+
+    private void moveDeskPoker(Container parentContainer, Poker currentPoker, int x, int y) {
+        parentContainer.setComponentZOrder(currentPoker, 0);
+
+        Point currentPokerLocation = currentPoker.getLocation();
+        currentPoker.setLocation(currentPokerLocation.x + x, currentPokerLocation.y + y);
+    }
+
+    /*
+    移动下方七个牌堆的纸牌
+     */
+    private void moveTablePoker(Container parentContainer, Poker currentPoker, int stackIndex, int x, int y) {
         PokerStack tableStack = Storage.tableStack[stackIndex];
         int currentPokerIndex = tableStack.indexOf(currentPoker);
 
@@ -137,7 +170,6 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
             Point currentPokerLocation = poker.getLocation();
             poker.setLocation(currentPokerLocation.x + x, currentPokerLocation.y + y);
         }
-
     }
 
     @Override
