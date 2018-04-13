@@ -190,6 +190,10 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
         this.currentPokerPoint = poker.getLocation();
     }
 
+    /**
+     * 鼠标点击的时候，将deskRestStack和deskStack中的纸牌进行交换
+     * @param e
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
         Poker poker = (Poker) e.getSource();
@@ -197,6 +201,9 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
         try {
             deskRestFront = Storage.deskRestStack.peek();
         } catch (EmptyStackException e1) {
+            /*
+            当deskRestStack纸牌为空的时候
+             */
             Poker tmp = null;
             while (Storage.deskStack.size() != 0) {
                 tmp = Storage.deskStack.pop();
