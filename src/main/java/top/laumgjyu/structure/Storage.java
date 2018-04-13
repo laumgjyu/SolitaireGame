@@ -5,6 +5,8 @@ import top.laumgjyu.consts.PokerType;
 import top.laumgjyu.gui.Poker;
 import top.laumgjyu.util.ImageUtil;
 
+import java.util.Stack;
+
 import static top.laumgjyu.consts.CoordinateConst.UP_DOWN_STACKS_SPACE;
 import static top.laumgjyu.gui.Poker.POKER_HEIGHT;
 import static top.laumgjyu.gui.Poker.POKER_WIDTH;
@@ -150,14 +152,26 @@ public class Storage {
             /*
             如果这种扑克是从deskStack牌堆上移动过来的，只需将当前的扑克放到tableStack上，当前扑克之后的扑克保持不动
              */
-            if (oldStack.getStackCode()==StackCode.DESK_STACK) break;
+            if (oldStack.getStackCode() == StackCode.DESK_STACK) break;
         }
 
     }
 
     private static void turnOldStack(PokerStack oldStack, Poker poker) {
-        int pokerToDeleteIndex = oldStack.indexOf(poker);
+        StackCode oldStackCode = oldStack.getStackCode();
+        if (oldStackCode == StackCode.DESK_STACK) {
+            turnOldDeskStack(oldStack, poker);
+        } else {
+            turnOldTableStack(oldStack, poker);
+        }
+    }
 
+    private static void turnOldDeskStack(PokerStack deskStack, Poker poker) {
+        deskStack.remove(poker);
+    }
+
+    private static void turnOldTableStack(PokerStack oldStack, Poker poker) {
+        int pokerToDeleteIndex = oldStack.indexOf(poker);
         /*
         移除移动之后的旧的堆栈里的纸牌
          */
@@ -177,15 +191,11 @@ public class Storage {
         如果oldStack为tableStack，将移除后的堆栈的最后一张纸牌显示出来
          */
         Poker front = (Poker) oldStack.get(oldStack.size() - 1);
-        if (oldStack.getX() != 0 && oldStack.getY() != 0) {
-            String type = front.getType().getValue();
-            int number = front.getNumber().getValue();
-            front.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, type, number));
-            front.setFront(true);
+        String type = front.getType().getValue();
+        int number = front.getNumber().getValue();
+        front.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, type, number, false));
+        front.setFront(true);
 
-            oldStack.setY(front.getLocation().y);
-        } else {
-            poker.getParent().add(front);
-        }
+        oldStack.setY(front.getLocation().y);
     }
 }

@@ -27,13 +27,20 @@ import static top.laumgjyu.consts.CoordinateConst.*;
 @Setter
 @ToString
 public class Poker extends JLabel implements MouseListener, MouseMotionListener {
+    private static final long serialVersionUID = -4413443648767942534L;
 
     public static final int POKER_WIDTH = 160;  //纸牌的默认宽度
+
     public static final int POKER_HEIGHT = 225;  //纸牌的默认高度
+//    public static final int HIGHLIGHT_WIDTH = 189;  //鼠标放在纸牌上高亮框的高度
+
+//    public static final int HIGHLIGHT_HEIGHT = 255;  //鼠标放在纸牌上高亮框的宽度
+
     public static final int TABLEAU_HEIGHT = 112;  //下方七个牌堆空之后的占位框的高度
 
-    private static final long serialVersionUID = -4413443648767942534L;
-    private PokerType type;  //扑克的种类
+//    public static final int HIGHLIGHT_SPACE = 14;  //高亮之后的poker位置与未高亮时的偏移
+
+    private PokerType type;  //扑克的花色
     private PokerNumber number;  //扑克的数值
     private boolean front;  //是否正面朝上
 
@@ -44,14 +51,9 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
     -1 -2 -3 -4 -5 -6分别表示上方从右到左的六个牌堆
      */
     private StackCode stackCode;
-    /*
-        父类中已经有的属性：
-        int x,y;
-        int width,length;
-        Icon icon;
-         */
-    private Point currentMousePoint;
-    private Point currentPokerPoint;
+
+    private Point currentMousePoint;  //鼠标按下时鼠标指针的位置
+    private Point currentPokerPoint;  //鼠标按下时被按扑克的位置
 
     public Poker(PokerType type, PokerNumber number, boolean front) {
         this();
@@ -81,6 +83,7 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
 
     @Override
     public void mouseReleased(MouseEvent e) {
+
         /*
         e.getX()和e.getY()获取事件发生位置与当前扑克label左上角的相对坐标
         这里先获取扑克的绝对坐标（即左上角坐标），然后计算事件发生位置的绝对坐标
@@ -192,6 +195,7 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
 
     /**
      * 鼠标点击的时候，将deskRestStack和deskStack中的纸牌进行交换
+     *
      * @param e
      */
     @Override
@@ -228,19 +232,48 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
             deskRestFront.setStackCode(StackCode.DESK_STACK);
             String deskFrontType = deskRestFront.getType().getValue();
             int deskFrontNumber = deskRestFront.getNumber().getValue();
-            deskRestFront.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, deskFrontType, deskFrontNumber));
+            deskRestFront.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, deskFrontType, deskFrontNumber, false));
             deskRestFront.setBounds(HOLDER_X_X + TABLE_STACKS_SPACE, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
         }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        //do nothing
+        Poker currentPoker = (Poker) e.getSource();
+        Container container = currentPoker.getParent();
+
+        if (!currentPoker.getFront()) return;
+
+        PokerStack currentStack = Storage.getPokerStackByStackCode(currentPoker.getStackCode());
+        int currentPokerIndex = currentStack.indexOf(currentPoker);
+
+        for (int i = currentPokerIndex; i < currentStack.size(); i++) {
+            currentPoker = (Poker) currentStack.get(i);
+            PokerType type = currentPoker.getType();
+            PokerNumber number = currentPoker.getNumber();
+            currentPoker.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, type.getValue(), number.getValue(), true));
+//            currentPoker.setBounds(currentPoker.getX(), currentPoker.getY(), POKER_WIDTH, POKER_HEIGHT);
+            container.setComponentZOrder(currentPoker, 0);
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        //do nothing
+
+        Poker currentPoker = (Poker) e.getSource();
+
+        if (!currentPoker.getFront()) return;
+
+        PokerStack currentStack = Storage.getPokerStackByStackCode(currentPoker.getStackCode());
+        int currentPokerIndex = currentStack.indexOf(currentPoker);
+
+        for (int i = currentPokerIndex; i < currentStack.size(); i++) {
+            currentPoker = (Poker) currentStack.get(i);
+            PokerType type = currentPoker.getType();
+            PokerNumber number = currentPoker.getNumber();
+            currentPoker.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, type.getValue(), number.getValue(), false));
+//            currentPoker.setBounds(currentPoker.getX(), currentPoker.getY(), POKER_WIDTH, POKER_HEIGHT);
+        }
     }
 
     @Override

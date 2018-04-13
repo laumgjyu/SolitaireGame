@@ -67,7 +67,7 @@ public class Table extends JPanel {
             completeStack[i] = new PokerStack<Poker>();
             completeStack[i].setX(HOLDER_A_X[i]);
             completeStack[i].setY(UP_DOWN_STACKS_SPACE);
-            completeStack[i].setStackCode(StackCode.getStackCode(-i-1));
+            completeStack[i].setStackCode(StackCode.getStackCode(-i - 1));
         }
 
                     /*
@@ -225,7 +225,7 @@ public class Table extends JPanel {
                 if (j == tableStack[i].size() - 1) {
                     type = poker.getType().getValue();
                     number = poker.getNumber().getValue();
-                    poker.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, type, number));
+                    poker.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, type, number, false));
                     poker.setFront(true);
 
                     tableStack[i].setY(POKER_HEIGHT + 2 * UP_DOWN_STACKS_SPACE + j * 13);
@@ -246,6 +246,34 @@ public class Table extends JPanel {
         newGameButton.setBounds(450, 900, BUTTON_WIDTH, BUTTON_HEIGHT);
         newGameButton.addMouseListener(new MouseAdapter() {
             @Override
+            public void mouseEntered(MouseEvent e) {
+                Button newGame = (Button) e.getSource();
+                newGame.setIcon(ImageUtil.getImage(BUTTON_WIDTH + 36, BUTTON_HEIGHT + 12, ImagePaths.NEW_GAME_LARGE));
+                newGame.setBounds(450, 900, BUTTON_WIDTH+ 36, BUTTON_HEIGHT+ 12);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                Button newGame = (Button) e.getSource();
+                newGame.setIcon(ImageUtil.getImage(BUTTON_WIDTH, BUTTON_HEIGHT, ImagePaths.NEW_GAME));
+                newGame.setBounds(450, 900, BUTTON_WIDTH, BUTTON_HEIGHT);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Button newGame = (Button) e.getSource();
+                newGame.setIcon(ImageUtil.getImage(BUTTON_WIDTH - 36, BUTTON_HEIGHT - 12, ImagePaths.NEW_GAME_SMALL));
+                newGame.setBounds(450, 900, BUTTON_WIDTH- 36, BUTTON_HEIGHT- 12);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                Button newGame = (Button) e.getSource();
+                newGame.setIcon(ImageUtil.getImage(BUTTON_WIDTH, BUTTON_HEIGHT, ImagePaths.NEW_GAME));
+                newGame.setBounds(450, 900, BUTTON_WIDTH, BUTTON_HEIGHT);
+            }
+
+            @Override
             public void mouseClicked(MouseEvent e) {
                 start();
             }
@@ -258,7 +286,36 @@ public class Table extends JPanel {
         undoButton.setBounds(700, 900, BUTTON_WIDTH, BUTTON_HEIGHT);
         undoButton.addMouseListener(new MouseAdapter() {
             @Override
+            public void mouseEntered(MouseEvent e) {
+                Button undo = (Button) e.getSource();
+                undo.setIcon(ImageUtil.getImage(BUTTON_WIDTH + 36, BUTTON_HEIGHT + 12, ImagePaths.UNDO_LARGE));
+                undo.setBounds(700, 900, BUTTON_WIDTH+36, BUTTON_HEIGHT+12);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                Button undo = (Button) e.getSource();
+                undo.setIcon(ImageUtil.getImage(BUTTON_WIDTH, BUTTON_HEIGHT, ImagePaths.UNDO));
+                undo.setBounds(700, 900, BUTTON_WIDTH, BUTTON_HEIGHT);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Button undo = (Button) e.getSource();
+                undo.setIcon(ImageUtil.getImage(BUTTON_WIDTH - 36, BUTTON_HEIGHT - 12, ImagePaths.UNDO_SMALL));
+                undo.setBounds(700, 900, BUTTON_WIDTH-36, BUTTON_HEIGHT-12);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                Button undo = (Button) e.getSource();
+                undo.setIcon(ImageUtil.getImage(BUTTON_WIDTH, BUTTON_HEIGHT, ImagePaths.UNDO));
+                undo.setBounds(700, 900, BUTTON_WIDTH, BUTTON_HEIGHT);
+            }
+
+            @Override
             public void mouseClicked(MouseEvent e) {
+
                 //TODO 添加返回事件
             }
         });

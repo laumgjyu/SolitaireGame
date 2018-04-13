@@ -8,7 +8,8 @@ public enum PokerType {
     HEART("Hearts"),   //红桃
     DIAMOND("Diamonds"),   //方片
     SPADE("Spades"),  //黑桃
-    HOLDER("Holder");  //占位符
+    HOLDER("Holder"),  //占位符
+    HIGHLIGHT("Highlight");  //高亮框
 
     private String i;
 
@@ -51,4 +52,4 @@ public enum PokerType {
                 throw new Exception("找不到索引对应的类型");
         }
     }
-}
+    }

@@ -18,7 +18,15 @@ public class ImagePaths {
 
     public static final String NEW_GAME = "images/New_Game.png";
 
+    public static final String NEW_GAME_LARGE = "images/large_New_Game.png";
+
+    public static final String NEW_GAME_SMALL = "images/small_New_Game.png";
+
     public static final String UNDO = "images/Undo.png";
+
+    public static final String UNDO_LARGE = "images/large_Undo.png";
+
+    public static final String UNDO_SMALL = "images/small_Undo.png";
 
     public static final String HIGH_LIGHT = "images/Card_Highlight.png";
 }
