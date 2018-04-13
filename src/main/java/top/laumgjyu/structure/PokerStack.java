@@ -17,7 +17,7 @@ public class PokerStack<E> extends Stack<E> {
     private int x;  //扑克堆的横坐标
     private int y;  //扑克堆的纵坐标
 
-    private int stackIndex;
+    private StackCode stackCode;
 
 
     public boolean include(int x, int y) {

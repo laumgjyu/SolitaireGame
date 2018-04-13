@@ -7,6 +7,7 @@ import top.laumgjyu.consts.ImagePaths;
 import top.laumgjyu.consts.PokerNumber;
 import top.laumgjyu.consts.PokerType;
 import top.laumgjyu.structure.PokerStack;
+import top.laumgjyu.structure.StackCode;
 import top.laumgjyu.structure.Storage;
 import top.laumgjyu.util.ImageUtil;
 
@@ -40,9 +41,9 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
     当前扑克属于哪个牌堆
     1-7分别表示下方七个牌堆
     0表示左上角四个牌堆
-    -1 -2 -3 -4 -5分别表示上方从右到左的五个牌堆
+    -1 -2 -3 -4 -5 -6分别表示上方从右到左的六个牌堆
      */
-    private int stack;
+    private StackCode stackCode;
     /*
         父类中已经有的属性：
         int x,y;
@@ -65,12 +66,12 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
     }
 
 
-    public int getStack() {
-        return stack;
+    public StackCode getStackCode() {
+        return stackCode;
     }
 
-    public void setStack(int stack) {
-        this.stack = stack;
+    public void setStackCode(StackCode stackCode) {
+        this.stackCode = stackCode;
     }
 
     public boolean getFront() {
@@ -91,28 +92,34 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
         int x = e.getX() + clickedPoker.getX();
         int y = e.getY() + clickedPoker.getY();
 
-        if (!putHere(x, y)) {
-            int stackIndex = clickedPoker.getStack();
+        if (!put(x, y)) {
+            StackCode stackCode = clickedPoker.getStackCode();
 
-            if (stackIndex < 0) {
+            if (stackCode == StackCode.DESK_STACK) {
                 resetToDeskStack(clickedPoker);
             } else {
-                resetToTableStack(clickedPoker, stackIndex);
+                resetToTableStack(clickedPoker, stackCode);
             }
         }
     }
 
-    private boolean putHere(int x, int y) {
+    private boolean put(int x, int y) {
         for (int i = 0; i < Storage.tableStack.length; i++) {
             if (Storage.tableStack[i].include(x, y)) {
-                return Storage.put(i, this);
+                return Storage.put(StackCode.getStackCode(i), this);
+            }
+        }
+
+        for (int i = 0; i < Storage.completeStack.length; i++) {
+            if (Storage.completeStack[i].include(x, y)) {
+                return Storage.put(StackCode.getStackCode(-i - 1), this);
             }
         }
         return false;
     }
 
-    private void resetToTableStack(Poker topPoker, int tableStackIndex) {
-        PokerStack tableStack = Storage.tableStack[tableStackIndex];
+    private void resetToTableStack(Poker topPoker, StackCode tableStackCode) {
+        PokerStack tableStack = Storage.getPokerStackByStackCode(tableStackCode);
 
         int topPokerIndex = tableStack.indexOf(topPoker);
 
@@ -136,11 +143,11 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
         int x = endPoint.x - currentMousePoint.x;
         int y = endPoint.y - currentMousePoint.y;
 
-        int stackIndex = currentPoker.getStack();
-        if (stackIndex < 0) {
+        StackCode stackCode = currentPoker.getStackCode();
+        if (stackCode == StackCode.DESK_STACK) {
             moveDeskPoker(parentContainer, currentPoker, x, y);
-        } else {
-            moveTablePoker(parentContainer, currentPoker, stackIndex, x, y);
+        } else if (stackCode.getCode() >= 0) {
+            moveTablePoker(parentContainer, currentPoker, stackCode, x, y);
         }
     }
 
@@ -154,8 +161,8 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
     /*
     移动下方七个牌堆的纸牌
      */
-    private void moveTablePoker(Container parentContainer, Poker currentPoker, int stackIndex, int x, int y) {
-        PokerStack tableStack = Storage.tableStack[stackIndex];
+    private void moveTablePoker(Container parentContainer, Poker currentPoker, StackCode stackCode, int x, int y) {
+        PokerStack tableStack = Storage.getPokerStackByStackCode(stackCode);
         int currentPokerIndex = tableStack.indexOf(currentPoker);
 
         /*
@@ -198,6 +205,7 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
                 poker.getParent().setComponentZOrder(tmp, 0);
 
                 tmp.setFront(false);
+                tmp.setStackCode(StackCode.DESK_REST_STACK);
                 tmp.setBounds(HOLDER_X_X, UP_DOWN_STACKS_SPACE, POKER_WIDTH, POKER_HEIGHT);
                 tmp.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, ImagePaths.BACK));
             }
@@ -210,6 +218,7 @@ public class Poker extends JLabel implements MouseListener, MouseMotionListener 
             poker.getParent().setComponentZOrder(deskRestFront, 0);
 
             deskRestFront.setFront(true);
+            deskRestFront.setStackCode(StackCode.DESK_STACK);
             String deskFrontType = deskRestFront.getType().getValue();
             int deskFrontNumber = deskRestFront.getNumber().getValue();
             deskRestFront.setIcon(ImageUtil.getImage(POKER_WIDTH, POKER_HEIGHT, deskFrontType, deskFrontNumber));

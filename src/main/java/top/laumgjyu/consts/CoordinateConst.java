@@ -10,7 +10,7 @@ public class CoordinateConst {
     public static final int HOLDER_A3_X = 750;
     public static final int HOLDER_A4_X = 580;
 
-    public static final int[] HOLDER_A_X = {HOLDER_A4_X, HOLDER_A3_X, HOLDER_A2_X, HOLDER_A1_X};
+    public static final int[] HOLDER_A_X = {HOLDER_A1_X, HOLDER_A2_X, HOLDER_A3_X, HOLDER_A4_X};
 
     public static final int UP_DOWN_STACKS_SPACE = 25;  //上方的五个牌堆的y坐标, 上方五个牌堆与下方七个牌堆y轴上的间距
     public static final int TABLE_STACKS_SPACE = 170;  //下方七个牌堆之间的距离
